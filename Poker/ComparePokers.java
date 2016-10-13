@@ -7,6 +7,9 @@ public class ComparePokers {
         PokerOne[] allPoker = new PokerOne[52];
         PokerOne[] firstPokerman = new PokerOne[7];
         PokerOne[] secondPokerman = new PokerOne[7];
+        long bestfirstPokerman = 0;
+        long bestsecondPokerman = 0;
+
         //赋初值
         for (int i = 0, j = 0; j < ShufflePoker.numbers.length; i++, j++) {
             allPoker[j] = new PokerOne();
@@ -47,13 +50,14 @@ public class ComparePokers {
         }
 
         //分别测出两份牌的等级
-        ComparePokers.sortPokers(firstPokerman);    //排序
-        ComparePokers.sortPokers(secondPokerman);   //排序
+        bestfirstPokerman = ComparePokers.getbest(firstPokerman);
+        bestsecondPokerman = ComparePokers.getbest(secondPokerman);
 
-        if (ComparePokers.getbest(firstPokerman)>ComparePokers.getbest(secondPokerman)){
+
+        if (bestfirstPokerman>bestsecondPokerman){
             System.out.println("A比B大。");
         }
-        else if (ComparePokers.getbest(firstPokerman)<ComparePokers.getbest(secondPokerman)){
+        else if (bestfirstPokerman<bestsecondPokerman){
             System.out.println("B比A大。");
         }
         else {
@@ -62,103 +66,104 @@ public class ComparePokers {
     }
 
 
-    public static PokerOne[] sortPokers(PokerOne[] p) {     //排序
-        for (int i = p.length; i > 0; i--) {
-            for (int j = p.length; j > 0; j--) {
-                if (p[j].getNumber() > p[j - 1].getNumber())
-                    p[j].changePokers(p[j - 1]);
-            }
-
-        }
-        return p;
-    }
 
 
 
-    public static Long getbest(PokerOne[] pokerOnes){
-        PokerOne[][] allkindPocker =new PokerOne[21][5];
-        int[] flag =new int[21];
-        Integer[] level =new Integer[21];
-        Long[] finalValue = new Long[21];
-        String finalNumber[][] =new String[21][6];
-        String finaltoLong = new String();
-        Long bestValue =new Long(0);
+
+    public static long getbest(PokerOne[] pokerOnes){
+        PokerOne[][] allkindPoker =new PokerOne[21][5];
+        int[] flag1 =new int[21];
+        int[] flag2 =new int[21];
+        int[] flag3 =new int[21];
+        int[] level =new int[21];
+        long[] finalValue = new long[21];
+        long finalNumber[][] =new long[21][6];
+        int m =0;
+
+        long bestValue = 0;
         int bestLoction =0;
         for (int i = 0; i < 21 ; i++) {
             for (int j = 0; j < 6 ; j++) {
-                finalNumber[i][j] =new String();
+                finalNumber[i][j] =0;
             }
         }
-        GiveValue.intGet(flag);
-        GiveValue.intergerGet(level);
-        GiveValue.LongGet(finalValue);
+        GiveValue.intGet(level);
+        GiveValue.longGet(finalValue);
 
         for (int i = 0; i <21 ; i++) {
             for (int j = 0; j <5 ; j++) {
-                allkindPocker[i][j] =new PokerOne();
+                allkindPoker[i][j] =new PokerOne();
             }
         }
         //把7张牌所有可能拿出来
-        for (int a=0 ;a<3 ; a++)
-            for (int b = a+1; b <4 ; b++)
-                for (int c = b+1; c <5 ; c++)
-                    for (int d = c+1; d <6 ; d++)
-                        for (int e = d+1,m =0,n =0; e <7 ; e++,m++) {
-                            pokerOnes[a].getPokers(allkindPocker[m][n]);
+        for (int a=0 ;a<3 ; a++) {
+            for (int b = a + 1; b < 4; b++) {
+                for (int c = b + 1; c < 5; c++) {
+                    for (int d = c + 1; d < 6; d++) {
+                        for (int e = d + 1, n = 0; e < 7; e++, m++) {
+                            pokerOnes[a].getPokers(allkindPoker[m][n]);
                             n++;
-                            pokerOnes[b].getPokers(allkindPocker[m][n]);
+                            pokerOnes[b].getPokers(allkindPoker[m][n]);
                             n++;
-                            pokerOnes[c].getPokers(allkindPocker[m][n]);
+                            pokerOnes[c].getPokers(allkindPoker[m][n]);
                             n++;
-                            pokerOnes[d].getPokers(allkindPocker[m][n]);
+                            pokerOnes[d].getPokers(allkindPoker[m][n]);
                             n++;
-                            pokerOnes[e].getPokers(allkindPocker[m][n]);
-                            n=0;
+                            pokerOnes[e].getPokers(allkindPoker[m][n]);
+                            n = 0;
                         }
-
-        for (int i = 0; i <21 ; i++) {
-            for (int j = 0; j <5; j++){
-                for (int k = j+1; k <5 ; k++) {
-                    if (allkindPocker[i][j].getNumber()==allkindPocker[j][k].getNumber())
-                        flag[i]++;
+                    }
                 }
             }
-            switch (flag[i]){
-                case 6:
-                    level[i] = 7;
-                case 4:
-                    level[i] = 6;
-                case 3:
-                    level[i] = 3;
-                case 2:
-                    level[i] = 2;
-                case 1:
-                    level[i] = 1;
-                case 0:
-                    level[i] = 0;
+        }
+        //排序
+        for (int k = 0; k < 21; k++) {
+            for (int i = 0; i <5; i++) {
+                for (int j = 4; j > 0; j--) {
+                    if (allkindPoker[k][j].getNumber() > allkindPoker[k][j - 1].getNumber())
+                        allkindPoker[k][j].changePokers(allkindPoker[k][j - 1]);
+                }
 
             }
-            flag[i] =0;
-            for (int j = 0; j <4 ; j++) {
-                if (allkindPocker[i][j].getNumber()==allkindPocker[i][j+1].getNumber()+1)
-                    flag[i]++;
+
+        }
+        //测有多少对子
+        for (int i = 0; i <21 ; i++) {
+            for (int j = 0; j <5; j++) {
+                for (int k = j + 1; k < 5; k++) {
+                    if (allkindPoker[i][j].getNumber() == allkindPoker[i][k].getNumber())
+                        flag1[i]++;
+                }
             }
-            if (flag[i]==4){
+
+
+            if (flag1[i]==0)    level[i] =0 ;
+            else if (flag1[i]==1)    level[i] =1 ;
+            else if (flag1[i]==2)    level[i] =2 ;
+            else if (flag1[i]==3)    level[i] =3 ;
+            else if (flag1[i]==6)    level[i] =6 ;
+            else if (flag1[i]==7)    level[i] =7 ;
+
+
+            for (int j = 0; j <4 ; j++) {
+                if (allkindPoker[i][j].getNumber()==(allkindPoker[i][j+1].getNumber()+1))
+                    flag2[i]++;
+            }
+            if (flag2[i]==4){
                 level[i] = 4 ;
 
             }
-            flag[i] = 0 ;
             for (int j = 0; j <4 ; j++) {
-                if (allkindPocker[i][j].getColour().equals(allkindPocker[i][j+1].getColour()))
-                    flag[i]++;
+                    if (allkindPoker[i][j].getColour().equals(allkindPoker[i][j+1].getColour()))
+                    flag3[i]++;
             }
 
 
-            if (flag[i]==4){
+            if (flag3[i]==4){
                 if (level[i]==4){
                     level[i] = 8;
 
-                    if (allkindPocker[i][0].getNumber()==14)
+                    if (allkindPoker[i][0].getNumber()==14)
                         level[i] = 9;
                 }
                 else{
@@ -169,9 +174,9 @@ public class ComparePokers {
             //将一对重新排序
             if (level[i]==1){
                 for (int j = 0; j < 4 ; j++) {
-                    if (allkindPocker[i][j].getNumber()==allkindPocker[i][j+1].getNumber()) {
-                        allkindPocker[i][j].changePokers(allkindPocker[i][0]);
-                        allkindPocker[i][j+1].changePokers(allkindPocker[i][1]);
+                    if (allkindPoker[i][j].getNumber()== allkindPoker[i][j+1].getNumber()) {
+                        allkindPoker[i][j].changePokers(allkindPoker[i][0]);
+                        allkindPoker[i][j+1].changePokers(allkindPoker[i][1]);
                     }
                 }
             }
@@ -181,15 +186,15 @@ public class ComparePokers {
                 int l =0;
                 GiveValue.intGet(showLocation);
                 for (int j = 0; j < 4 ; j++) {
-                    if (allkindPocker[i][j].getNumber()==allkindPocker[i][j+1].getNumber()) {
+                    if (allkindPoker[i][j].getNumber()== allkindPoker[i][j+1].getNumber()) {
                         showLocation[l] =j;
                         l++;
                     }
                 }
-                allkindPocker[i][showLocation[0]].changePokers(allkindPocker[i][0]);
-                allkindPocker[i][showLocation[0]+1].changePokers(allkindPocker[i][1]);
-                allkindPocker[i][showLocation[1]].changePokers(allkindPocker[i][2]);
-                allkindPocker[i][showLocation[1]+1].changePokers(allkindPocker[i][3]);
+                allkindPoker[i][showLocation[0]].changePokers(allkindPoker[i][0]);
+                allkindPoker[i][showLocation[0]+1].changePokers(allkindPoker[i][1]);
+                allkindPoker[i][showLocation[1]].changePokers(allkindPoker[i][2]);
+                allkindPoker[i][showLocation[1]+1].changePokers(allkindPoker[i][3]);
 
             }
 
@@ -197,40 +202,41 @@ public class ComparePokers {
             if(level[i]==3){
                 int location =0;
                 for (int j = 0; j <4 ; j++) {
-                    if (allkindPocker[i][j].getNumber()==allkindPocker[i][j+1].getNumber()) {
+                    if (allkindPoker[i][j].getNumber()== allkindPoker[i][j+1].getNumber()) {
                         location = j;
                         break;
                     }
                 }
-                allkindPocker[i][location].changePokers(allkindPocker[i][0]);
-                allkindPocker[i][location+1].changePokers(allkindPocker[i][1]);
-                allkindPocker[i][location+2].changePokers(allkindPocker[i][2]);
+                allkindPoker[i][location].changePokers(allkindPoker[i][0]);
+                allkindPoker[i][location+1].changePokers(allkindPoker[i][1]);
+                allkindPoker[i][location+2].changePokers(allkindPoker[i][2]);
             }
             //将葫芦重新排序
             if (level[i]==6){
-                if (allkindPocker[i][0].getNumber()!=allkindPocker[i][2].getNumber()){
-                    allkindPocker[i][0].changePokers(allkindPocker[i][3]);
-                    allkindPocker[i][1].changePokers(allkindPocker[i][4]);
+                if (allkindPoker[i][0].getNumber()!= allkindPoker[i][2].getNumber()){
+                    allkindPoker[i][0].changePokers(allkindPoker[i][3]);
+                    allkindPoker[i][1].changePokers(allkindPoker[i][4]);
                 }
             }
             //将四条重新排序
             if (level[i]==7){
-                if (allkindPocker[i][0].getNumber()!=allkindPocker[i][1].getNumber()){
-                    allkindPocker[i][0].changePokers(allkindPocker[i][4]);
+                if (allkindPoker[i][0].getNumber()!= allkindPoker[i][1].getNumber()){
+                    allkindPoker[i][0].changePokers(allkindPoker[i][4]);
                 }
             }
-            finalNumber[i][0] =  level[i].toString();
-            for (int j = 1,k =0; j <finalNumber.length ; j++,k++) {
-                if (allkindPocker[i][k].getNumber()>9)
-                finalNumber[i][j] = allkindPocker[i][k].getNumber().toString();
-                else
-                    finalNumber[i][j] = "0"+allkindPocker[i][k].getNumber().toString();
+            finalNumber[i][0] =  level[i]+10;
+            for (int j = 1,k =0; j < 5 ; j++,k++) {
+                if (allkindPoker[i][k].getNumber()!=null)
+                finalNumber[i][j] = (long)(allkindPoker[i][k].getNumber()+10);
+
             }
 
-            for (int j = 0; j < finalNumber.length; j++) {
-                finaltoLong += finalNumber[j];
+            for (int j = 0; j < 6; j++) {
+                for (int k = 10-j*2; k >0 ; k--) {
+                    finalNumber[i][j]*=10;
+                }
+                finalValue[i]+=finalNumber[i][j];
             }
-            finalValue[i] = Long.valueOf(finaltoLong);
         }
         bestValue = finalValue[0];
 
@@ -241,10 +247,12 @@ public class ComparePokers {
             }
         }
         for (int i = 0; i <5 ; i++) {
-            System.out.print(allkindPocker[bestLoction][i].getNumber());
-            System.out.print(allkindPocker[bestLoction][i].getColour());
-            System.out.println();
+            System.out.print(allkindPoker[bestLoction][i].getNumber());
+            System.out.print("  ");
+            System.out.print(allkindPoker[bestLoction][i].getColour());
+            System.out.print("  ");
         }
+        System.out.println();
         return bestValue;
     }
 }
